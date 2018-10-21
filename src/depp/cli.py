@@ -16,8 +16,15 @@ Why does this file exist, and why not put this in __main__?
 """
 import click
 
+from .application.config import settings
+from .adaptors.cli import reporters
+
 
 @click.command()
 @click.argument('names', nargs=-1)
 def main(names):
+    settings.configure(
+        UPSTREAM_MODULE_REPORTER=reporters.UpstreamModuleReporter,
+        DOWNSTREAM_MODULE_REPORTER=reporters.DownstreamModuleReporter,
+    )
     click.echo(repr(names))
