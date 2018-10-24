@@ -13,4 +13,7 @@ class AbstractModuleFinder(abc.ABC):
 
     @abc.abstractmethod
     def find_modules(self) -> Iterable[Module]:
+        """
+        Searches the package for all importable Python modules.
+        """
         ...
