@@ -4,9 +4,16 @@ from depp.application.ports.modulefinder import AbstractModuleFinder
 from depp.domain.valueobjects import Module
 
 
-class ModuleFinder(AbstractModuleFinder):
-    def find_modules(self) -> Iterable[Module]:
-        return self._fake_modules
 
-    def set_fake_modules(self, modules: List[str]) -> None:
-        self._fake_modules = [Module[m] for m in modules]
+
+
+class StubModuleFinder(AbstractModuleFinder):
+    """
+    ModuleFinder for tests.
+    """
+    def __init__(self, *args, file_structure, **kwargs):
+        self.file_structure = file_structure
+        super().__init__(*args, **kwargs)
+
+    def find_modules(self) -> Iterable[Module]:
+        return []
