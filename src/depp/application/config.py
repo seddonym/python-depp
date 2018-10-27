@@ -13,5 +13,10 @@ class Settings:
             return self._config[name]
         return super().__getattr__(name)
 
+    def copy(self) -> 'Settings':
+        new_instance = self.__class__()
+        new_instance.configure(**self._config)
+        return new_instance
+
 
 settings = Settings()

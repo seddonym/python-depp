@@ -8,9 +8,6 @@ class AbstractImportScanner(abc.ABC):
     """
     Statically analyses some Python modules for import statements within their shared package.
     """
-    def __init__(self, modules: Iterable[Module]) -> None:
-        self.modules = modules
-
     @abc.abstractmethod
-    def scan_for_imports(self) -> Iterable[DirectImport]:
+    def scan_for_imports(self, modules: Iterable[Module]) -> Iterable[DirectImport]:
         ...

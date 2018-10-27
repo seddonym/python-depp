@@ -1,45 +1,29 @@
 from depp.application import usecases
 from depp.adaptors.graph import NetworkXBackedImportGraph
 
-from tests.adaptors.modulefinder import StubModuleFinder
-from tests.valueobjects import File, Directory
+from tests.adaptors.filesystem import FakeFileSystem
+from tests.config import override_settings
 
 
 class TestBuildGraph:
     def test_happy_path(self):
-        # module_finder = StubModuleFinder(
-        #     file_structure={
-        #         File('__init__.py'),
-        #         Directory(
-        #             'foo',
-        #             contents=[
-        #                 File('.hidden'),
-        #                 File('one.py'),
-        #                 File('two.py'),
-        #                 Directory('three',
-        #                           contents=[
-        #                               File()
-        #                           ])
-        #             ],
-        #         ),
-        #     },
-        # )
-        module_finder = StubModuleFinder(
-            file_structure=(
-                '__init__.py',
-                (
-                    'foo',
-                    (
-                        '__init__.py',
-                        'one.py',
-                        (
-                            'two', (),
-                        ),
-                    ),
-                ),
-            ),
+        file_system = FakeFileSystem(
+            contents="""
+                /path/to/mypackage/
+                    __init__.py
+                    foo/
+                        __init__.py
+                        one.py
+                        two/
+                            __init__.py
+                            green.py
+                            blue.py        
+            """
         )
-        result = usecases.build_graph('mypackage', module_finder=module_finder)
+        with override_settings(
+            FILE_SYSTEM=file_system,
+        ):
+            result = usecases.build_graph('mypackage')
 
         assert isinstance(result, NetworkXBackedImportGraph)
 

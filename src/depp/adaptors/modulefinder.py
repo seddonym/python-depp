@@ -22,15 +22,10 @@ class SafeFilenameModule(Module):
 
 class ModuleFinder(modulefinder.AbstractModuleFinder):
 
-    def __init__(
-        self, package_name: str, filesystem: AbstractFileSystem = None,
-    ) -> None:
-        self.filesystem = filesystem
-        super().__init__(package_name)
+    def find_modules(self, package_name: str, file_system: AbstractFileSystem) -> Iterable[Module]:
+        self.file_system = file_system
 
-    def find_modules(self) -> Iterable[Module]:
-
-        package_directory = self.filesystem.dirname(self.package.filename)
+        package_directory = self.file_system.dirname(self.package.filename)
         modules: List[Module] = []
 
         for module_filename in self._get_python_files_inside_package(package_directory):
@@ -41,13 +36,13 @@ class ModuleFinder(modulefinder.AbstractModuleFinder):
 
         return modules
 
-    def _get_python_files_inside_package(self, directory: str) -> Iterator[str]:
+    def _get_python_files_inside_package(self, directory: str) -> Iterable[str]:
         """
         Get a list of Python files within the supplied package directory.
          Return:
             Generator of Python file names.
         """
-        for dirpath, dirs, files in self.filesystem.walk(directory):
+        for dirpath, dirs, files in self.file_system.walk(directory):
             # Don't include directories that aren't Python packages,
             # nor their subdirectories.
             if '__init__.py' not in files:
@@ -62,7 +57,7 @@ class ModuleFinder(modulefinder.AbstractModuleFinder):
 
             for filename in files:
                 if self._is_python_file(filename):
-                    yield self.filesystem.join(dirpath, filename)
+                    yield self.file_system.join(dirpath, filename)
 
     def _should_ignore_dir(self, directory: str) -> bool:
         # TODO: make this configurable.
@@ -88,7 +83,7 @@ class ModuleFinder(modulefinder.AbstractModuleFinder):
          Returns:
             Absolute module name for importing (string).
         """
-        container_directory, package_name = self.filesystem.split(package_directory)
+        container_directory, package_name = self.file_system.split(package_directory)
         internal_filename_and_path = filename_and_path[len(package_directory):]
         internal_filename_and_path_without_extension = internal_filename_and_path[1:-3]
         components = [package_name] + internal_filename_and_path_without_extension.split('/')
