@@ -1,7 +1,7 @@
 import abc
 from typing import Iterable
 
-from depp.domain.valueobjects import Module, DirectImport
+from depp.domain.valueobjects import SafeFilenameModule, DirectImport
 
 
 class AbstractImportScanner(abc.ABC):
@@ -9,5 +9,5 @@ class AbstractImportScanner(abc.ABC):
     Statically analyses some Python modules for import statements within their shared package.
     """
     @abc.abstractmethod
-    def scan_for_imports(self, modules: Iterable[Module]) -> Iterable[DirectImport]:
+    def scan_for_imports(self, module: SafeFilenameModule) -> Iterable[DirectImport]:
         ...

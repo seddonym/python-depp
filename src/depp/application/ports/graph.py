@@ -1,10 +1,19 @@
 import abc
-from typing import List, Optional
+from typing import Set, Optional
 
 from depp.domain.valueobjects import DirectImport, Module, ImportPath
 
 
 class AbstractImportGraph(abc.ABC):
+    @property
+    @abc.abstractmethod
+    def modules(self) -> Set[Module]:
+        ...
+
+    @abc.abstractmethod
+    def add_module(self, module: Module) -> None:
+        ...
+
     @abc.abstractmethod
     def add_import(self, direct_import: DirectImport) -> None:
         ...
@@ -16,9 +25,9 @@ class AbstractImportGraph(abc.ABC):
     @abc.abstractmethod
     def find_downstream_modules(
         self, module: Module, search_descendants: bool = False
-    ) -> List[Module]:
+    ) -> Set[Module]:
         """
-        Return a list of all the modules that import (even directly) the supplied module.
+        Return a set of all the modules that import (even directly) the supplied module.
         Args:
             module: The upstream Module.
             search_descendants: Whether to find modules downstream of the *descendants* of the
@@ -41,9 +50,9 @@ class AbstractImportGraph(abc.ABC):
     @abc.abstractmethod
     def find_upstream_modules(
         self, module: Module, search_descendants: bool = False
-    ) -> List[Module]:
+    ) -> Set[Module]:
         """
-        Return a list of all the modules that are imported (even directly) by the supplied module.
+        Return a set of all the modules that are imported (even directly) by the supplied module.
 
         Args:
             module: The downstream Module.
@@ -56,4 +65,8 @@ class AbstractImportGraph(abc.ABC):
     def find_shortest_path(
         self, downstream_module: Module, upstream_module: Module
     ) -> Optional[ImportPath]:
+        ...
+
+    @abc.abstractmethod
+    def fetch_modules_imported_by(self, module: Module) -> Set[Module]:
         ...

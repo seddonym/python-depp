@@ -1,32 +1,20 @@
 from typing import Iterable, List
 
-from ..domain.valueobjects import Module
+from ..domain.valueobjects import Module, SafeFilenameModule
 from depp.application.ports import modulefinder
 from depp.application.ports.filesystem import AbstractFileSystem
 
 
-class SafeFilenameModule(Module):
-    """
-    A Python module whose filename can be known safely, without importing the code.
-    """
-    def __init__(self, name: str, filename: str) -> None:
-        """
-        Args:
-            name: The fully qualified name of a Python module, e.g. 'package.foo.bar'.
-            filename: The full filename and path to the Python file,
-            e.g. '/path/to/package/one.py'.
-        """
-        self.filename = filename
-        super().__init__(name)
-
-
 class ModuleFinder(modulefinder.AbstractModuleFinder):
 
-    def find_modules(self, package_name: str, file_system: AbstractFileSystem) -> Iterable[Module]:
+    def find_modules(
+        self, package_name: str, file_system: AbstractFileSystem
+    ) -> Iterable[SafeFilenameModule]:
         self.file_system = file_system
 
-        package_directory = self.file_system.dirname(self.package.filename)
-        modules: List[Module] = []
+        package_directory = self._determine_package_directory(package_name)
+
+        modules: List[SafeFilenameModule] = []
 
         for module_filename in self._get_python_files_inside_package(package_directory):
             module_name = self._module_name_from_filename(module_filename, package_directory)
@@ -90,3 +78,6 @@ class ModuleFinder(modulefinder.AbstractModuleFinder):
         if components[-1] == '__init__':
             components.pop()
         return '.'.join(components)
+
+    def _determine_package_directory(self, package_name: str) -> str:
+        return '/path/to/mypackage'

@@ -29,6 +29,42 @@ class Module(ValueObject):
     def __str__(self) -> str:
         return self.name
 
+    def package_name(self) -> str:
+        return self.name.split('.')[0]
+
+
+class SafeFilenameModule(Module):
+    """
+    A Python module whose filename can be known safely, without importing the code.
+    """
+    def __init__(self, name: str, filename: str) -> None:
+        """
+        Args:
+            name: The fully qualified name of a Python module, e.g. 'package.foo.bar'.
+            filename: The full filename and path to the Python file,
+            e.g. '/path/to/package/one.py'.
+        """
+        self.filename = filename
+        super().__init__(name)
+
+    def __repr__(self) -> str:
+        return "<{}: {} ({})>".format(self.__class__.__name__, self.name, self.filename)
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, self.__class__):
+            return hash(self) == hash(other)
+        else:
+            return False
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.filename))
+
+    def as_module(self) -> Module:
+        """
+        Casts as a Module rather than as a SafeFilenameModule.
+        """
+        return Module(name=self.name)
+
 
 class DirectImport(ValueObject):
     """
@@ -46,7 +82,7 @@ class ImportPath(ValueObject):
     """
     A flow of imports between two modules, from upstream to downstream.
     """
-    def __init__(self, *modules: List[Module]) -> Module:
+    def __init__(self, *modules: List[Module]) -> None:
         self.modules = modules
 
     def __str__(self) -> str:

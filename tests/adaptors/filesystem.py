@@ -1,4 +1,5 @@
 from typing import List
+import os
 
 from depp.application.ports.filesystem import AbstractFileSystem
 
@@ -22,13 +23,28 @@ class FakeFileSystem(AbstractFileSystem):
         For each directory in the tree rooted at directory top (including top itself),
         it yields a 3-tuple (dirpath, dirnames, filenames).
         """
-        ...
+        """
+        /path/to/mypackage/
+                    __init__.py
+                    foo/
+                        __init__.py
+                        one.py
+                        two/
+                            __init__.py
+                            green.py
+                            blue.py   
+        """
+        return (
+            ('/path/to/mypackage', ['foo'], ['__init__.py']),
+            ('/path/to/mypackage/foo', ['two'], ['__init__.py', 'one.py']),
+            ('/path/to/mypackage/foo/two', [], ['__init__.py', 'green.py', 'blue.py']),
+        )
 
     def join(self, *components: List[str]) -> str:
-        ...
+        return os.path.join(*components)
 
     def split(self, file_name: str) -> List[str]:
-        ...
+        return os.path.split(file_name)
 
     def _parse_contents(self, raw_contents: str):
         return []

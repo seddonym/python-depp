@@ -1,5 +1,5 @@
-from depp.application.ports import importscanner
+from depp.application.ports.importscanner import AbstractImportScanner
 
 
-class ImportScanner(importscanner.ImportScanner):
+class ImportScanner(AbstractImportScanner):
     ...

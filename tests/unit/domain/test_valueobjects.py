@@ -1,4 +1,4 @@
-from depp.domain.valueobjects import Module, DirectImport, ImportPath
+from depp.domain.valueobjects import Module, SafeFilenameModule, DirectImport, ImportPath
 
 
 class TestModule:
@@ -24,6 +24,45 @@ class TestModule:
         assert hash(a) == hash(b)
         assert hash(a) != hash(c)
 
+
+class TestSafefilenameModule:
+    def test_repr(self):
+        module = SafeFilenameModule('foo.bar', filename='foo/bar.py')
+        assert repr(module) == '<SafeFilenameModule: foo.bar (foo/bar.py)>'
+
+    def test_equals(self):
+        a = SafeFilenameModule('foo.bar', filename='foo/bar.py')
+        b = SafeFilenameModule('foo.bar', filename='foo/bar.py')
+        c = SafeFilenameModule('foo.bar.baz', filename='foo/bar.py')
+        d = SafeFilenameModule('foo.bar', filename='different/bar.py')
+        e = Module('foo.bar')
+
+        assert a == b
+        assert a != c
+        assert a != d
+        assert a != e
+
+        # Also non-Module instances should not be treated as equal.
+        assert a != 'foo'
+
+    def test_hash(self):
+        a = SafeFilenameModule('foo.bar', filename='foo/bar.py')
+        b = SafeFilenameModule('foo.bar', filename='foo/bar.py')
+        c = SafeFilenameModule('foo.bar.baz', filename='foo/bar.py')
+        d = SafeFilenameModule('foo.bar', filename='different/bar.py')
+        e = Module('foo.bar')
+
+        assert hash(a) == hash(b)
+        assert hash(a) != hash(c)
+        assert hash(a) != hash(d)
+        assert hash(a) != hash(e)
+
+    def test_as_module(self):
+        safe_filename_module = SafeFilenameModule('foo.bar', filename='foo/bar.py')
+
+        result = safe_filename_module.as_module()
+
+        assert result == Module('foo.bar')
 
 class TestDirectImport:
     def test_repr(self):
