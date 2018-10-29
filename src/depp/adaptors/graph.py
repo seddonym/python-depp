@@ -42,14 +42,12 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
     ) -> Optional[ImportPath]:
         try:
             path = shortest_path(self._networkx_graph,
-                                 downstream_module.name,
-                                 upstream_module.name)
+                                 source=upstream_module.name,
+                                 target=downstream_module.name)
         except networkx.NetworkXNoPath:
             return None
 
-        path = tuple(path)
-
-        return path
+        return ImportPath(*map(Module, path))
 
     def fetch_modules_imported_by(self, module: Module) -> Set[Module]:
         imported_modules = set()
