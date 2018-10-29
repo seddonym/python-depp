@@ -20,6 +20,13 @@ class FakeImportScanner(AbstractImportScanner):
                 })
 
         """
+        # Ensure all the keys are Modules (and not SafeFilenameModules).
+        # TODO - don't use SafeFilenameModules as this is a nasty gotcha.
+        if import_map:
+            for key, values in import_map.items():
+                assert key.__class__ is Module
+                assert all(value.__class__ is Module for value in values)
+
         self.import_map = import_map if import_map else {}
 
     def scan_for_imports(self, module: SafeFilenameModule) -> Iterable[DirectImport]:
@@ -27,7 +34,7 @@ class FakeImportScanner(AbstractImportScanner):
         try:
             imported_modules = self.import_map[module]
         except KeyError:
-            return []
+            return set()
 
         build_direct_import = lambda imported_module: DirectImport(
             importer=module,

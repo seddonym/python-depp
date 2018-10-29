@@ -40,4 +40,4 @@ class TestBuildGraph:
 
         assert set(module_imports.keys()) == graph.modules
         for module, imported_modules in module_imports.items():
-            assert graph.fetch_modules_imported_by(module) == set(imported_modules)
+            assert graph.find_modules_directly_imported_by(module) == set(imported_modules)

@@ -24,6 +24,9 @@ class TestModule:
         assert hash(a) == hash(b)
         assert hash(a) != hash(c)
 
+    def test_package_name(self):
+        assert Module('foo.bar.baz').package_name == 'foo'
+
 
 class TestSafefilenameModule:
     def test_repr(self):

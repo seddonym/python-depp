@@ -17,4 +17,4 @@ class AbstractModuleFinder(abc.ABC):
         """
         Searches the package for all importable Python modules.
         """
-        ...
+        raise NotImplementedError

@@ -59,7 +59,8 @@ setup(
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
     install_requires=[
-        'click',
+        'click>=6.7,<7',
+        'networkx>=2.1,<3',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],
     extras_require={

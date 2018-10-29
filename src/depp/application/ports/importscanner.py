@@ -10,4 +10,4 @@ class AbstractImportScanner(abc.ABC):
     """
     @abc.abstractmethod
     def scan_for_imports(self, module: SafeFilenameModule) -> Iterable[DirectImport]:
-        ...
+        raise NotImplementedError

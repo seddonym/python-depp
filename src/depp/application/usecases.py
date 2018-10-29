@@ -38,29 +38,29 @@ def build_graph(package_name) -> AbstractImportGraph:
     return graph
 
 
-def report_upstream_modules(module_name: str) -> None:
-    """
-    Report on all the modules imported (directly or indirectly) by the supplied module and
-    its descendants.
-    """
-    reporter = settings.UPSTREAM_MODULE_REPORTER
-
-    module = Module(module_name)
-    graph = build_graph(module.package_name)
-    modules = graph.find_upstream_modules(module, search_descendants=True)
-
-    reporter.report(module, modules)
-
-
-def report_downstream_modules(module_name: str) -> None:
-    """
-    Report on all the modules that import (directly or indirectly) the supplied module and
-    its descendants.
-    """
-    reporter = settings.DOWNSTREAM_MODULE_REPORTER
-
-    module = Module(module_name)
-    graph = build_graph(module.package_name)
-    modules = graph.find_downstream_modules(module, search_descendants=True)
-
-    reporter.report(module, modules)
+# def report_upstream_modules(module_name: str) -> None:
+#     """
+#     Report on all the modules imported (directly or indirectly) by the supplied module and
+#     its descendants.
+#     """
+#     reporter = settings.UPSTREAM_MODULE_REPORTER
+#
+#     module = Module(module_name)
+#     graph = build_graph(module.package_name)
+#     modules = graph.find_upstream_modules(module, search_descendants=True)
+#
+#     reporter.report(module, modules)
+#
+#
+# def report_downstream_modules(module_name: str) -> None:
+#     """
+#     Report on all the modules that import (directly or indirectly) the supplied module and
+#     its descendants.
+#     """
+#     reporter = settings.DOWNSTREAM_MODULE_REPORTER
+#
+#     module = Module(module_name)
+#     graph = build_graph(module.package_name)
+#     modules = graph.find_downstream_modules(module, search_descendants=True)
+#
+#     reporter.report(module, modules)

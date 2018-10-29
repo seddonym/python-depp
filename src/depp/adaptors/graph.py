@@ -18,14 +18,16 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
             all_modules.add(Module(module_name))
         return all_modules
 
-    def add_module(self, module: Module) -> None:
-        self._networkx_graph.add_node(module.name)
+    def find_modules_directly_imported_by(self, module: Module) -> Set[Module]:
+        imported_modules = set()
+        for imported_module_name in self._networkx_graph.successors(module.name):
+            imported_modules.add(
+                Module(imported_module_name)
+            )
+        return imported_modules
 
-    def add_import(self, direct_import: DirectImport) -> None:
-        self._networkx_graph.add_edge(direct_import.importer.name, direct_import.imported.name)
-
-    def remove_import(self, direct_import: DirectImport) -> None:
-        self._networkx_graph.remove_edge(direct_import.importer.name, direct_import.imported.name)
+    def find_modules_that_directly_import(self, module: Module) -> Set[Module]:
+        raise NotImplementedError
 
     def find_downstream_modules(
         self, module: Module, search_descendants: bool = False
@@ -37,8 +39,14 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
     ) -> Set[Module]:
         raise NotImplementedError
 
+    def find_children(self, module: Module) -> Set[Module]:
+        raise NotImplementedError
+
+    def find_descendants(self, module: Module) -> Set[Module]:
+        raise NotImplementedError
+
     def find_shortest_path(
-        self, downstream_module: Module, upstream_module: Module
+        self, upstream_module: Module, downstream_module: Module,
     ) -> Optional[ImportPath]:
         try:
             path = shortest_path(self._networkx_graph,
@@ -49,10 +57,17 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
 
         return ImportPath(*map(Module, path))
 
-    def fetch_modules_imported_by(self, module: Module) -> Set[Module]:
-        imported_modules = set()
-        for imported_module_name in self._networkx_graph.successors(module.name):
-            imported_modules.add(
-                Module(imported_module_name)
-            )
-        return imported_modules
+    def find_shortest_paths(
+        self, upstream_modules: Set[Module], downstream_modules: Set[Module],
+    ) -> Set[ImportPath]:
+        raise NotImplementedError
+
+    def add_module(self, module: Module) -> None:
+        self._networkx_graph.add_node(module.name)
+
+    def add_import(self, direct_import: DirectImport) -> None:
+        self._networkx_graph.add_edge(direct_import.importer.name, direct_import.imported.name)
+
+    def remove_import(self, direct_import: DirectImport) -> None:
+        self._networkx_graph.remove_edge(direct_import.importer.name, direct_import.imported.name)
+

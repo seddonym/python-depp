@@ -43,7 +43,7 @@ class FakeFileSystem(AbstractFileSystem):
         except KeyError:
             return []
 
-        return self._walk_contents(directory_contents, containing_directory=directory_name)
+        yield from self._walk_contents(directory_contents, containing_directory=directory_name)
 
     def _walk_contents(
         self, directory_contents: Dict[str, Any], containing_directory: str
@@ -58,20 +58,14 @@ class FakeFileSystem(AbstractFileSystem):
             else:
                 directories.append(key)
 
-        tuples.append(
-            (containing_directory, directories, files)
-        )
+        yield (containing_directory, directories, files)
 
         if directories:
             for directory in directories:
-                child_tuples = self._walk_contents(
+                yield from self._walk_contents(
                     directory_contents=directory_contents[directory],
                     containing_directory=self.join(containing_directory, directory),
                 )
-                if child_tuples:
-                    tuples.extend(child_tuples)
-
-        return tuples
 
     def join(self, *components: List[str]) -> str:
         return '/'.join(components)

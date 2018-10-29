@@ -29,6 +29,7 @@ class Module(ValueObject):
     def __str__(self) -> str:
         return self.name
 
+    @property
     def package_name(self) -> str:
         return self.name.split('.')[0]
 
