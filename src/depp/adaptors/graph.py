@@ -40,7 +40,12 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
         raise NotImplementedError
 
     def find_children(self, module: Module) -> Set[Module]:
-        raise NotImplementedError
+        children = set()
+        for potential_child in self.modules:
+            if potential_child.is_child_of(module):
+                children.add(potential_child)
+        return children
+
 
     def find_descendants(self, module: Module) -> Set[Module]:
         raise NotImplementedError

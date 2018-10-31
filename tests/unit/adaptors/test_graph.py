@@ -39,9 +39,10 @@ def test_find_modules_that_directly_import():
 
 class TestFindDownstreamModules:
     @pytest.mark.parametrize(
-        'module, expected_result',
-        (Module('a'), {Module('b'), Module('c'), Module('d'), Module('e')}),
-        (Module('e'), set()),
+        'module, expected_result', (
+            (Module('a'), {Module('b'), Module('c'), Module('d'), Module('e')}),
+            (Module('e'), set()),
+        )
     )
     def test_without_descendants(self, module, expected_result):
         graph = NetworkXBackedImportGraph()
@@ -61,11 +62,11 @@ class TestFindDownstreamModules:
 
 
 class TestFindUpstreamModules:
-
     @pytest.mark.parametrize(
-        'module, expected_result',
-        (Module('e'), {Module('d'), Module('c'), Module('a')}),
-        (Module('a'), set()),
+        'module, expected_result', (
+            (Module('e'), {Module('d'), Module('c'), Module('a')}),
+            (Module('a'), set()),
+        )
     )
     def test_without_descendants(self, module, expected_result):
         graph = NetworkXBackedImportGraph()
@@ -85,10 +86,11 @@ class TestFindUpstreamModules:
 
 
 @pytest.mark.parametrize(
-    'module, expected_result',
-    (Module('foo'), {Module('foo.a'), Module('foo.b'), Module('foo.c')}),
-    (Module('foo.a'), {Module('foo.a.one')}),
-    (Module('foo.c'), set()),
+    'module, expected_result', (
+        (Module('foo'), {Module('foo.a'), Module('foo.b'), Module('foo.c')}),
+        (Module('foo.a'), {Module('foo.a.one')}),
+        (Module('foo.c'), set()),
+    )
 )
 def test_find_children(module, expected_result):
     graph = NetworkXBackedImportGraph()
@@ -102,10 +104,11 @@ def test_find_children(module, expected_result):
 
 
 @pytest.mark.parametrize(
-    'module, expected_result',
-    (Module('foo'), {Module('foo.a'), Module('foo.b'), Module('foo.c'), Module('foo.a.one')}),
-    (Module('foo.a'), {Module('foo.a.one')}),
-    (Module('foo.c'), set()),
+    'module, expected_result', (
+        (Module('foo'), {Module('foo.a'), Module('foo.b'), Module('foo.c'), Module('foo.a.one')}),
+        (Module('foo.a'), {Module('foo.a.one')}),
+        (Module('foo.c'), set()),
+    )
 )
 def test_find_descendants(module, expected_result):
     graph = NetworkXBackedImportGraph()

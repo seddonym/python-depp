@@ -33,6 +33,9 @@ class Module(ValueObject):
     def package_name(self) -> str:
         return self.name.split('.')[0]
 
+    def is_child_of(self, module: 'Module') -> bool:
+        return self.name.split('.')[:-1] == module.name.split('.')
+
 
 class SafeFilenameModule(Module):
     """
