@@ -36,6 +36,9 @@ class Module(ValueObject):
     def is_child_of(self, module: 'Module') -> bool:
         return self.name.split('.')[:-1] == module.name.split('.')
 
+    def is_descendant_of(self, module: 'Module') -> bool:
+        return self.name.startswith(f'{module.name}.')
+
 
 class SafeFilenameModule(Module):
     """

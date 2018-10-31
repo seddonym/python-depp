@@ -105,7 +105,8 @@ def test_find_children(module, expected_result):
 
 @pytest.mark.parametrize(
     'module, expected_result', (
-        (Module('foo'), {Module('foo.a'), Module('foo.b'), Module('foo.c'), Module('foo.a.one')}),
+        (Module('foo'), {Module('foo.a'), Module('foo.b'), Module('foo.c'),
+                         Module('foo.a.one'), Module('foo.b.one')}),
         (Module('foo.a'), {Module('foo.a.one')}),
         (Module('foo.c'), set()),
     )
@@ -152,6 +153,9 @@ def test_find_shortest_path_returns_none_if_not_exists():
         upstream_module=c,
         downstream_module=a,
     )
+
+def test_find_shortest_paths():
+    assert False
 
 
 def test_add_module():

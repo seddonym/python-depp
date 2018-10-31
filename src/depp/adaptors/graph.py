@@ -27,7 +27,12 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
         return imported_modules
 
     def find_modules_that_directly_import(self, module: Module) -> Set[Module]:
-        raise NotImplementedError
+        importers = set()
+        for importer_name in self._networkx_graph.predecessors(module.name):
+            importers.add(
+                Module(importer_name)
+            )
+        return importers
 
     def find_downstream_modules(
         self, module: Module, search_descendants: bool = False
@@ -46,9 +51,12 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
                 children.add(potential_child)
         return children
 
-
     def find_descendants(self, module: Module) -> Set[Module]:
-        raise NotImplementedError
+        descendants = set()
+        for potential_descendant in self.modules:
+            if potential_descendant.is_descendant_of(module):
+                descendants.add(potential_descendant)
+        return descendants
 
     def find_shortest_path(
         self, upstream_module: Module, downstream_module: Module,
