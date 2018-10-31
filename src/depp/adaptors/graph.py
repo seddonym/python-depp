@@ -1,7 +1,7 @@
 from typing import Set, Optional
 
 import networkx  # type: ignore
-from networkx.algorithms import shortest_path  # type: ignore
+from networkx.algorithms import shortest_path, has_path  # type: ignore
 
 from depp.application.ports import graph
 from depp.domain.valueobjects import DirectImport, Module, ImportPath
@@ -37,7 +37,13 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
     def find_downstream_modules(
         self, module: Module, search_descendants: bool = False
     ) -> Set[Module]:
-        raise NotImplementedError
+        downstream_modules = set()
+        if search_descendants:
+            raise NotImplementedError
+        for candidate in self.modules:
+            if has_path(self._networkx_graph, module, candidate):
+                downstream_modules.add(candidate)
+        return downstream_modules
 
     def find_upstream_modules(
         self, module: Module, search_descendants: bool = False
