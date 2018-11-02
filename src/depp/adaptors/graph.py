@@ -40,8 +40,9 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
         downstream_modules = set()
         if search_descendants:
             raise NotImplementedError
-        for candidate in self.modules:
-            if has_path(self._networkx_graph, module, candidate):
+        modules_other_than_this_one = lambda m: m != module
+        for candidate in filter(modules_other_than_this_one, self.modules):
+            if has_path(self._networkx_graph, module.name, candidate.name):
                 downstream_modules.add(candidate)
         return downstream_modules
 
