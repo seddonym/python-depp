@@ -79,7 +79,7 @@ class TestFindUpstreamModules:
         graph.add_import(DirectImport(importer=d, imported=e))
         graph.add_import(DirectImport(importer=f, imported=b))
 
-        assert expected_result == graph.find_downstream_modules(module)
+        assert expected_result == graph.find_upstream_modules(module)
 
     def test_with_descendants(self):
         assert False
