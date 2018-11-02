@@ -37,28 +37,33 @@ def test_find_modules_that_directly_import():
     assert {a, f} == graph.find_modules_that_directly_import(Module('bar'))
 
 
-class TestFindDownstreamModules:
-    @pytest.mark.parametrize(
-        'module, expected_result', (
-            (Module('a'), {Module('b'), Module('c'), Module('d'), Module('e')}),
-            (Module('e'), set()),
-        )
+@pytest.mark.parametrize(
+    'module, as_subpackage, expected_result', (
+        (Module('foo.a'), False, {Module('foo.b'), Module('foo.c'), Module('foo.a.d'),
+                                  Module('foo.b.e')}),
+        (Module('foo.b.e'), False, set()),
+        (Module('foo.a'), True, {Module('foo.b'), Module('foo.c'), Module('foo.b.e'),
+                                 Module('foo.b.g')}),
+        (Module('foo.b.e'), True, set()),
     )
-    def test_without_descendants(self, module, expected_result):
-        graph = NetworkXBackedImportGraph()
-        a, b, c = Module('a'), Module('b'), Module('c')
-        d, e, f = Module('d'), Module('e'), Module('f')
+)
+def test_find_downstream_modules(module, as_subpackage, expected_result):
+    graph = NetworkXBackedImportGraph()
+    a, b, c = Module('foo.a'), Module('foo.b'), Module('foo.c')
+    d, e, f = Module('foo.a.d'), Module('foo.b.e'), Module('foo.a.f')
+    g = Module('foo.b.g')
 
-        graph.add_import(DirectImport(importer=a, imported=b))
-        graph.add_import(DirectImport(importer=a, imported=c))
-        graph.add_import(DirectImport(importer=c, imported=d))
-        graph.add_import(DirectImport(importer=d, imported=e))
-        graph.add_import(DirectImport(importer=f, imported=b))
+    graph.add_import(DirectImport(importer=a, imported=b))
+    graph.add_import(DirectImport(importer=a, imported=c))
+    graph.add_import(DirectImport(importer=c, imported=d))
+    graph.add_import(DirectImport(importer=d, imported=e))
+    graph.add_import(DirectImport(importer=f, imported=b))
+    graph.add_import(DirectImport(importer=f, imported=g))
 
-        assert expected_result == graph.find_downstream_modules(module)
-
-    def test_with_descendants(self):
-        assert False
+    assert expected_result == graph.find_downstream_modules(
+        module,
+        as_subpackage=as_subpackage,
+    )
 
 
 class TestFindUpstreamModules:
