@@ -55,13 +55,19 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
     def find_upstream_modules(
         self, module: Module, as_subpackage: bool = False
     ) -> Set[Module]:
-        upstream_modules = set()
+        # TODO optimise for as_subpackage.
+        destination_modules = {module}
         if as_subpackage:
-            raise NotImplementedError
-        modules_other_than_this_one = lambda m: m != module
-        for candidate in filter(modules_other_than_this_one, self.modules):
-            if has_path(self._networkx_graph, candidate.name, module.name):
-                upstream_modules.add(candidate)
+            destination_modules.update(self.find_descendants(module))
+
+        upstream_modules = set()
+
+        for candidate in filter(lambda m: m not in destination_modules, self.modules):
+            for destination_module in destination_modules:
+                if has_path(self._networkx_graph, candidate.name, destination_module.name):
+                    upstream_modules.add(candidate)
+                    break
+
         return upstream_modules
 
     def find_children(self, module: Module) -> Set[Module]:
