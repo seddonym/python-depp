@@ -99,7 +99,15 @@ class NetworkXBackedImportGraph(graph.AbstractImportGraph):
     def find_shortest_paths(
         self, upstream_modules: Set[Module], downstream_modules: Set[Module],
     ) -> Set[ImportPath]:
-        raise NotImplementedError
+        # TODO optimise.
+        import_paths = set()
+        for upstream_module in upstream_modules:
+            for downstream_module in downstream_modules:
+                shortest_path = self.find_shortest_path(upstream_module=upstream_module,
+                                                        downstream_module=downstream_module)
+                if shortest_path:
+                    import_paths.add(shortest_path)
+        return import_paths
 
     def add_module(self, module: Module) -> None:
         self._networkx_graph.add_node(module.name)

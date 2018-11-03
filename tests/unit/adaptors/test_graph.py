@@ -161,7 +161,31 @@ def test_find_shortest_path_returns_none_if_not_exists():
     )
 
 def test_find_shortest_paths():
-    assert False
+    graph = NetworkXBackedImportGraph()
+    a, b, c = Module('foo'), Module('bar'), Module('baz')
+    d, e, f = Module('long'), Module('way'), Module('around')
+    g = Module('foobar')
+
+    # Add short path between a and c.
+    graph.add_import(DirectImport(importer=a, imported=b))
+    graph.add_import(DirectImport(importer=b, imported=c))
+
+    # Add longer path between a and c.
+    graph.add_import(DirectImport(importer=a, imported=d))
+    graph.add_import(DirectImport(importer=d, imported=e))
+    graph.add_import(DirectImport(importer=e, imported=f))
+    graph.add_import(DirectImport(importer=f, imported=c))
+
+    # Add second part of path between b and g
+    graph.add_import(DirectImport(importer=c, imported=g))
+
+    assert {
+        ImportPath(a, b, c),
+        ImportPath(b, c, g),
+    } == graph.find_shortest_paths(
+        upstream_modules=[a, b],
+        downstream_modules=[c, g],
+    )
 
 
 def test_add_module():
